@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { 
   MapPin, 
   PhoneCall, 
@@ -50,13 +50,12 @@ export default function EmergencyDashboard({
   
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    if (isSOSTriggered) {
-      setSosState("active");
-    } else {
-      setSosState("idle");
-    }
-  }, [isSOSTriggered]);
+  // Synchronize state when isSOSTriggered prop changes (state adjustment during rendering pattern)
+  const [prevIsSOSTriggered, setPrevIsSOSTriggered] = useState(isSOSTriggered);
+  if (isSOSTriggered !== prevIsSOSTriggered) {
+    setPrevIsSOSTriggered(isSOSTriggered);
+    setSosState(isSOSTriggered ? "active" : "idle");
+  }
 
   const startSOSWorkflow = () => {
     setErrorMessage(null);

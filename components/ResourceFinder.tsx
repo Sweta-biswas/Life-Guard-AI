@@ -32,15 +32,35 @@ export default function ResourceFinder({ initialLocation }: ResourceFinderProps)
   const [medicineQuery, setMedicineQuery] = useState("");
   const [searchStatus, setSearchStatus] = useState<string | null>(null);
 
-  useEffect(() => {
+  // Synchronize state when initialLocation prop changes (state adjustment during rendering pattern)
+  const [prevInitialLocation, setPrevInitialLocation] = useState(initialLocation);
+  if (initialLocation !== prevInitialLocation) {
+    setPrevInitialLocation(initialLocation);
     if (initialLocation) {
       setLocation(initialLocation);
     }
-  }, [initialLocation]);
+  }
+
+  const loadResources = async (lat: number, lon: number, type: "hospital" | "pharmacy") => {
+    setLoadingResources(true);
+    setErrorMsg(null);
+    try {
+      const data = await fetchNearbyResources(lat, lon, type);
+      setResources(data);
+    } catch (e) {
+      console.error(e);
+      setErrorMsg("Could not fetch nearby resources. Using offline simulated clinics.");
+    } finally {
+      setLoadingResources(false);
+    }
+  };
 
   useEffect(() => {
     if (location) {
-      loadResources(location.lat, location.lon, activeType);
+      const timer = setTimeout(() => {
+        loadResources(location.lat, location.lon, activeType);
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [location, activeType]);
 
@@ -71,20 +91,6 @@ export default function ResourceFinder({ initialLocation }: ResourceFinderProps)
       },
       { enableHighAccuracy: true, timeout: 8000 }
     );
-  };
-
-  const loadResources = async (lat: number, lon: number, type: "hospital" | "pharmacy") => {
-    setLoadingResources(true);
-    setErrorMsg(null);
-    try {
-      const data = await fetchNearbyResources(lat, lon, type);
-      setResources(data);
-    } catch (e) {
-      console.error(e);
-      setErrorMsg("Could not fetch nearby resources. Using offline simulated clinics.");
-    } finally {
-      setLoadingResources(false);
-    }
   };
 
   const handleMedicineSearch = (e: React.FormEvent) => {
@@ -198,7 +204,7 @@ export default function ResourceFinder({ initialLocation }: ResourceFinderProps)
           <Compass className="h-12 w-12 text-zinc-400 mb-3 animate-pulse" />
           <p className="font-semibold text-zinc-800 dark:text-zinc-200">Location Access Required</p>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 max-w-sm">
-            Please allow GPS access or click "Share Location" above to query actual nearby hospitals and pharmacies.
+            Please allow GPS access or click &quot;Share Location&quot; above to query actual nearby hospitals and pharmacies.
           </p>
           <Button
             onClick={detectLocation}

@@ -282,7 +282,6 @@ export default function Home() {
 
         {activeTab === "assistant" && (
           <SymptomChat
-            profile={profile}
             analysisResult={analysisResult}
             isLoading={isAnalysisLoading}
             onAnalyzeSymptoms={handleAnalyzeSymptoms}
@@ -300,6 +299,7 @@ export default function Home() {
 
         {activeTab === "profile" && (
           <UserProfile
+            key={profile?.updated_at || 'loading'}
             initialProfile={profile}
             initialContacts={contacts}
             onProfileUpdated={(updatedProf) => setProfile(updatedProf)}

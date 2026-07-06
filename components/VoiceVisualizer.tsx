@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Mic, MicOff, Loader2 } from "lucide-react";
+import { Mic, MicOff } from "lucide-react";
 import { Button } from "./ui/button";
 
 interface ISpeechRecognitionEvent {
@@ -32,18 +32,24 @@ interface ISpeechRecognition {
 
 interface VoiceVisualizerProps {
   onTranscriptReady: (text: string) => void;
-  placeholder?: string;
 }
 
 export default function VoiceVisualizer({
-  onTranscriptReady,
-  placeholder = "Describe your symptoms by voice..."
+  onTranscriptReady
 }: VoiceVisualizerProps) {
   const [isListening, setIsListening] = useState(false);
-  const [recognition, setRecognition] = useState<ISpeechRecognition | null>(null);
   const [supported, setSupported] = useState(true);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
+  
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const recognitionRef = useRef<ISpeechRecognition | null>(null);
+
+  const stopTimer = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  };
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -85,9 +91,9 @@ export default function VoiceVisualizer({
           setIsListening(false);
         };
 
-        setRecognition(rec);
+        recognitionRef.current = rec;
       } else {
-        setSupported(false);
+        setTimeout(() => setSupported(false), 0);
       }
     }
 
@@ -96,24 +102,17 @@ export default function VoiceVisualizer({
     };
   }, [onTranscriptReady]);
 
-  const stopTimer = () => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-  };
-
   const toggleListening = () => {
-    if (!supported || !recognition) {
+    if (!supported || !recognitionRef.current) {
       alert("Voice speech recognition is not supported in this browser. Please type your symptoms instead.");
       return;
     }
 
     if (isListening) {
-      recognition.stop();
+      recognitionRef.current.stop();
     } else {
       try {
-        recognition.start();
+        recognitionRef.current.start();
       } catch (err) {
         console.error("Error starting speech recognition:", err);
       }

@@ -91,7 +91,14 @@ export async function fetchNearbyResources(
       return generateFallbackResources(lat, lon, type).sort((a, b) => a.distance - b.distance);
     }
 
-    const resources: MedicalResource[] = data.elements.map((el: any) => {
+    const resources: MedicalResource[] = data.elements.map((el: {
+      type: string;
+      id: number;
+      lat?: number;
+      lon?: number;
+      center?: { lat: number; lon: number };
+      tags?: Record<string, string>;
+    }) => {
       // Overpass ways return 'center' with lat/lon, nodes return lat/lon directly
       const resourceLat = el.lat || el.center?.lat || lat;
       const resourceLon = el.lon || el.center?.lon || lon;

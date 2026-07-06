@@ -1,16 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { 
   User, 
-  Heart, 
-  Phone, 
   Plus, 
   Trash2, 
   Loader2, 
   Save, 
   Users, 
-  Activity, 
   AlertCircle, 
   Check 
 } from "lucide-react";
@@ -53,26 +50,11 @@ export default function UserProfile({
   const [telegramChatId, setTelegramChatId] = useState("");
 
   // UI States
-  const [isEditing, setIsEditing] = useState(true);
+  const [isEditing, setIsEditing] = useState(!initialProfile || !initialProfile.name);
   const [profileSaving, setProfileSaving] = useState(false);
   const [contactAdding, setContactAdding] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
-
-  useEffect(() => {
-    if (initialProfile && initialProfile.name) {
-      setName(initialProfile.name || "");
-      setAge(initialProfile.age || "");
-      setGender(initialProfile.gender || "");
-      setBloodGroup(initialProfile.blood_group || "");
-      setConditions(initialProfile.medical_conditions || "");
-      setPhone(initialProfile.phone || "");
-      setAddress(initialProfile.address || "");
-      setIsEditing(false);
-    } else {
-      setIsEditing(true);
-    }
-  }, [initialProfile]);
 
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -144,11 +144,11 @@ export default function EmergencyHistory({ history }: EmergencyHistoryProps) {
                             </p>
                           </div>
 
-                          {entry.details?.latitude && (
+                          {entry.details?.latitude !== undefined && entry.details?.longitude !== undefined && (
                             <div className="p-2.5 bg-white dark:bg-zinc-950 rounded-lg border border-zinc-100 dark:border-zinc-800/60 inline-flex items-center gap-1.5 font-medium text-zinc-600 dark:text-zinc-300">
                               <MapPin className="h-3.5 w-3.5 text-red-500" />
                               <span className="font-bold">Coordinates:</span>
-                              <span className="font-mono">{entry.details.latitude.toFixed(6)}, {entry.details.longitude.toFixed(6)}</span>
+                              <span className="font-mono">{(entry.details.latitude ?? 0).toFixed(6)}, {(entry.details.longitude ?? 0).toFixed(6)}</span>
                             </div>
                           )}
                         </div>

@@ -43,13 +43,23 @@ export interface EmergencyContact {
   created_at?: string;
 }
 
+export interface HistoryDetails {
+  latitude?: number;
+  longitude?: number;
+  notified_contacts_count?: number;
+  timestamp?: string;
+  assessment?: string;
+  recommendations?: string[];
+  need_emergency?: boolean;
+}
+
 export interface HistoryEntry {
   id?: string;
   profile_id?: string;
   type: "symptom_analysis" | "emergency_sos";
   description: string;
   risk_level: "Low" | "Medium" | "High";
-  details: any;
+  details: HistoryDetails;
   created_at?: string;
 }
 

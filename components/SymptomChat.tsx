@@ -10,12 +10,11 @@ import {
   Info, 
   ShieldAlert, 
   Loader2, 
-  PlusCircle, 
   Sparkles 
 } from "lucide-react";
 import { Button } from "./ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
-import { Profile, addHistoryEntry } from "@/lib/supabase";
+import { Card, CardContent } from "./ui/card";
+import { addHistoryEntry } from "@/lib/supabase";
 
 interface TriageResult {
   risk_level: "Low" | "Medium" | "High";
@@ -33,7 +32,6 @@ interface Message {
 }
 
 interface SymptomChatProps {
-  profile: Profile | null;
   analysisResult: TriageResult | null;
   isLoading: boolean;
   onAnalyzeSymptoms: (text: string) => void;
@@ -43,7 +41,6 @@ interface SymptomChatProps {
 }
 
 export default function SymptomChat({
-  profile,
   analysisResult,
   isLoading,
   onAnalyzeSymptoms,
@@ -62,11 +59,17 @@ export default function SymptomChat({
   const [input, setInput] = useState("");
   const chatEndRef = useRef<HTMLDivElement | null>(null);
 
+  // Use ref to read fresh messages inside useEffect without triggering dependency warnings
+  const messagesRef = useRef(messages);
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+
   // If parent handles new analysis, add to chat log
   useEffect(() => {
     if (analysisResult) {
       // Find last user input to pair it, or treat as a new triage event
-      const lastUserMsg = [...messages].reverse().find(m => m.sender === "user");
+      const lastUserMsg = [...messagesRef.current].reverse().find(m => m.sender === "user");
       const userText = lastUserMsg?.text || "Symptom Analysis Request";
       
       const newBotMsg: Message = {
