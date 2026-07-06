@@ -2,14 +2,12 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { 
-  AlertTriangle, 
   MapPin, 
   PhoneCall, 
   Activity, 
   ShieldAlert, 
   Heart, 
   UserPlus, 
-  Check, 
   Navigation,
   Loader2,
   X

@@ -13,7 +13,7 @@ import {
   AlertCircle 
 } from "lucide-react";
 import { Button } from "./ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
+import { Card, CardContent } from "./ui/card";
 import { fetchNearbyResources, MedicalResource } from "@/lib/location";
 
 interface ResourceFinderProps {

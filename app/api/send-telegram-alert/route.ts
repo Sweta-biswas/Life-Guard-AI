@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { chatId, name, patientName, lat, lon, conditions } = body;
+    const { chatId, patientName, lat, lon, conditions } = body;
 
     if (!chatId) {
       return NextResponse.json(
@@ -73,10 +73,11 @@ export async function POST(req: Request) {
       data: resData
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     console.error("Error sending Telegram message:", error);
     return NextResponse.json(
-      { error: "Failed to dispatch Telegram message", details: error?.message },
+      { error: "Failed to dispatch Telegram message", details: errorMessage },
       { status: 500 }
     );
   }

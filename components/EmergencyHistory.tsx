@@ -11,11 +11,9 @@ import {
   ChevronUp, 
   AlertTriangle, 
   CheckCircle2, 
-  Info,
-  Clock
+  Info
 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
-import { Button } from "./ui/button";
 import { HistoryEntry } from "@/lib/supabase";
 
 interface EmergencyHistoryProps {

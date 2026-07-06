@@ -4,6 +4,32 @@ import React, { useState, useEffect, useRef } from "react";
 import { Mic, MicOff, Loader2 } from "lucide-react";
 import { Button } from "./ui/button";
 
+interface ISpeechRecognitionEvent {
+  results: {
+    [index: number]: {
+      [index: number]: {
+        transcript: string;
+      };
+    };
+  };
+}
+
+interface ISpeechRecognitionError {
+  error: string;
+}
+
+interface ISpeechRecognition {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onstart: (() => void) | null;
+  onresult: ((event: ISpeechRecognitionEvent) => void) | null;
+  onerror: ((event: ISpeechRecognitionError) => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+}
+
 interface VoiceVisualizerProps {
   onTranscriptReady: (text: string) => void;
   placeholder?: string;
@@ -14,7 +40,7 @@ export default function VoiceVisualizer({
   placeholder = "Describe your symptoms by voice..."
 }: VoiceVisualizerProps) {
   const [isListening, setIsListening] = useState(false);
-  const [recognition, setRecognition] = useState<any>(null);
+  const [recognition, setRecognition] = useState<ISpeechRecognition | null>(null);
   const [supported, setSupported] = useState(true);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -22,7 +48,10 @@ export default function VoiceVisualizer({
   useEffect(() => {
     if (typeof window !== "undefined") {
       const SpeechRecognition =
-        (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        (window as unknown as { SpeechRecognition?: new () => ISpeechRecognition; webkitSpeechRecognition?: new () => ISpeechRecognition })
+          .SpeechRecognition ||
+        (window as unknown as { SpeechRecognition?: new () => ISpeechRecognition; webkitSpeechRecognition?: new () => ISpeechRecognition })
+          .webkitSpeechRecognition;
       
       if (SpeechRecognition) {
         const rec = new SpeechRecognition();
@@ -38,14 +67,14 @@ export default function VoiceVisualizer({
           }, 1000);
         };
 
-        rec.onresult = (event: any) => {
+        rec.onresult = (event: ISpeechRecognitionEvent) => {
           const text = event.results[0][0].transcript;
           if (text) {
             onTranscriptReady(text);
           }
         };
 
-        rec.onerror = (event: any) => {
+        rec.onerror = (event: ISpeechRecognitionError) => {
           console.error("Speech recognition error:", event.error);
           stopTimer();
           setIsListening(false);
@@ -134,7 +163,7 @@ export default function VoiceVisualizer({
           </div>
 
           <p className="text-sm italic text-zinc-600 dark:text-zinc-300 max-w-sm">
-            "Tap the red button when you are finished speaking"
+            &quot;Tap the red button when you are finished speaking&quot;
           </p>
         </div>
       ) : (

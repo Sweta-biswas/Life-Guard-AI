@@ -8,11 +8,8 @@ import {
   User, 
   History as HistoryIcon,
   Activity,
-  Loader2,
-  Sparkles,
-  Volume2
+  Loader2
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { 
   getProfile, 
   getEmergencyContacts, 
